@@ -1,0 +1,39 @@
+server:
+  port: 8070
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authserverexample
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090 # http://localhost:8081/sso-auth-server/.well-known/jwks.json
+
+app:
+  auth:
+    base-url: http://localhost:${server.port}
+    jwt:
+      keystore: classpath:jwt.p12
+      access-token-validity-seconds: 3600
+      refresh-token-validity-seconds: 86400
+    otp:
+      ttl-minutes: 5
+
+  # Redis for OTP storage
+  spring:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}

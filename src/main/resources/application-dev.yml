@@ -1,0 +1,9 @@
+spring:
+  flyway:
+    clean-disabled: false
+    clean-on-validation-error: true
+    validate-on-migrate: false
+
+logging:
+  level:
+    root: INFO
