@@ -105,7 +105,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
                 : null;
 
         OAuth2Authorization authorization = OAuth2Authorization.withRegisteredClient(registeredClient)
-                .principalName(clientPrincipal.getName())
+                .principalName(principal.getName()) // this returns userDetails.getUsername() from AbstractAuthenticationToken class;
                 .authorizationGrantType(otpToken.getGrantType())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -114,7 +114,6 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
                                                                     // get the principal to construct the
                                                                     // DefaultOAuth2TokenContext.Builder which is used
                                                                     // for generating access token and refresh token.
-                .principalName(principal.getName()) // this returns userDetails.getUsername() from AbstractAuthenticationToken class;
                 .build();
         authorizationService.save(authorization);
 
