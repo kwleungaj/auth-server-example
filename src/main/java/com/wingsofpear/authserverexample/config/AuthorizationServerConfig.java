@@ -9,17 +9,15 @@ import com.wingsofpear.authserverexample.auth.OtpAuthenticationProvider;
 import com.wingsofpear.authserverexample.auth.dto.CustomUserDetails;
 import com.wingsofpear.authserverexample.auth.service.CustomAuthorizationService;
 import com.wingsofpear.authserverexample.auth.service.OtpService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -27,9 +25,9 @@ import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -41,7 +39,6 @@ import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
@@ -167,16 +164,30 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public OAuth2TokenGenerator<OAuth2Token> tokenGenerator(JWKSource<SecurityContext> jwkSource) {
+    public OAuth2TokenGenerator<OAuth2Token> tokenGenerator(JWKSource<SecurityContext> jwkSource,
+                                                            OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer) {
         JwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource);
         JwtGenerator jwtGenerator = new JwtGenerator(jwtEncoder);
-        // (Optional) customize JWT claims here:
-        // jwtGenerator.setJwtCustomizer(tokenCustomizer());
+        jwtGenerator.setJwtCustomizer(jwtCustomizer);
 
         OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
         OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
 
         return new DelegatingOAuth2TokenGenerator(jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+        return context -> {
+            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
+                // what you set as the principal in your OtpAuthenticationProvider
+                Authentication authPrincipal = context.getPrincipal(); // UsernamePasswordAuthenticationToken
+                Object principal = authPrincipal.getPrincipal(); // CustomUserDetails
+                if (principal instanceof CustomUserDetails user) {
+                    context.getClaims().claim("user_id", user.getId());
+                }
+            }
+        };
     }
 
     static class CustomAuthorizationRowMapper extends JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper {
