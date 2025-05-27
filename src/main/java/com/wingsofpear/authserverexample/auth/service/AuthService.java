@@ -2,7 +2,6 @@ package com.wingsofpear.authserverexample.auth.service;
 
 import com.wingsofpear.authserverexample.auth.dto.*;
 import jakarta.validation.Valid;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 public interface AuthService {
     void signup(SignupRequestDTO req);
@@ -13,7 +12,7 @@ public interface AuthService {
 
     void logoutByRT(LogoutByRTRequestDTO refreshTokenDTO);
 
-    void logoutByAT(Jwt principal);
+    void logoutByAT();
 
-    void logoutAll(Jwt principal);
+    void logoutAll();
 }

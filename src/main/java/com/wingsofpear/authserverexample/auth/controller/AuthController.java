@@ -6,8 +6,6 @@ import com.wingsofpear.authserverexample.common.dto.ApiResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,14 +39,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout/at")
-    public ResponseEntity<ApiResponseDTO<Boolean>> logoutOneSessionByAccessToken(@AuthenticationPrincipal Jwt principal) {
-        authService.logoutByAT(principal);
+    public ResponseEntity<ApiResponseDTO<Boolean>> logoutOneSessionByAccessToken() {
+        authService.logoutByAT();
         return ResponseEntity.ok(ApiResponseDTO.success(null));
     }
 
     @PostMapping("/logout/all")
-    public ResponseEntity<ApiResponseDTO<Boolean>> logoutAllSession(@AuthenticationPrincipal Jwt principal) {
-        authService.logoutAll(principal);
+    public ResponseEntity<ApiResponseDTO<Boolean>> logoutAllSession() {
+        authService.logoutAll();
         return ResponseEntity.ok(ApiResponseDTO.success(null));
     }
 

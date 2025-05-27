@@ -4,6 +4,7 @@ import com.wingsofpear.authserverexample.auth.OtpAuthenticationToken;
 import com.wingsofpear.authserverexample.auth.dto.*;
 import com.wingsofpear.authserverexample.auth.entity.User;
 import com.wingsofpear.authserverexample.auth.repository.UserRepository;
+import com.wingsofpear.authserverexample.common.util.SessionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -141,9 +140,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logoutByAT(Jwt principal) {
-        String accessToken = principal.getTokenValue();
-
+    public void logoutByAT() {
+        String accessToken = SessionUtil.getAccessToken();
         OAuth2Authorization authorization =
                 authorizationService.findByToken(accessToken, OAuth2TokenType.ACCESS_TOKEN);
 
@@ -154,9 +152,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logoutAll(Jwt principal) {
-        String email = principal.getClaimAsString(StandardClaimNames.SUB);
-        log.info("JWT sub: {}", email);
+    public void logoutAll() {
+        String email = SessionUtil.getEmail();
+        log.info("User email: {}", email);
         authorizationService.revokeAllByPrincipal(email);
     }
 }

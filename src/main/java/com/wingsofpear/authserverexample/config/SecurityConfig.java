@@ -35,9 +35,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         // return 401 instead of 403 for missing/invalid credentials
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-                // tell Spring to use our wrapped UserDetailsService + encoder
-                .userDetailsService(userDetailsService);
+                );
 
         return http.build();
     }
