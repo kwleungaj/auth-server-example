@@ -11,15 +11,17 @@ import static com.wingsofpear.authserverexample.common.util.OtpUtil.generateOtp;
 
 @Service
 public class OtpServiceImpl implements OtpService {
-    @Value("${app.auth.otp.ttl-minutes}")
-    private int TTL_MINUTES;
-    @Value("${app.auth.otp.code-length}")
-    private int CODE_LENGTH;
-    private final Duration OTP_VALIDITY = Duration.ofMinutes(TTL_MINUTES);
+    private final int CODE_LENGTH;
+    private final Duration OTP_VALIDITY;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public OtpServiceImpl(RedisTemplate redisTemplate) {
+    public OtpServiceImpl(RedisTemplate<String, String> redisTemplate,
+                          @Value("${app.auth.otp.ttl-minutes}") int ttlMinutes,
+                          @Value("${app.auth.otp.code-length}") int codeLength
+    ) {
         this.redisTemplate = redisTemplate;
+        this.CODE_LENGTH = codeLength;
+        this.OTP_VALIDITY = Duration.ofMinutes(ttlMinutes);
     }
 
     @Override
