@@ -79,10 +79,12 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
 
         user = userDetailsService.loadUserByUsername(otpToken.getEmail());
 
-        if (!otpService.validate(otpToken.getEmail(), otpToken.getOtp())) {
+        if (!otpService.validateOtp(otpToken.getEmail(), otpToken.getOtp())) {
             throw new OAuth2AuthenticationException(
                     new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT, "Invalid OTP", null)
             );
+        } else {
+            otpService.clearOtp(otpToken.getEmail());
         }
 
         UsernamePasswordAuthenticationToken principal =

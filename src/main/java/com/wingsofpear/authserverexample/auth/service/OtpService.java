@@ -1,5 +1,9 @@
 package com.wingsofpear.authserverexample.auth.service;
 
 public interface OtpService {
-    boolean validate(String email, String otp);
+    boolean validateOtp(String email, String otp);
+
+    String requestOtp(String email);
+
+    void clearOtp(String email);
 }

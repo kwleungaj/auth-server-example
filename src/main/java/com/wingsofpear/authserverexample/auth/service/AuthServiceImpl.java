@@ -32,13 +32,20 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepo;
     private final CustomAuthorizationService authorizationService;
     private final RestTemplate restTemplate;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     public AuthServiceImpl(UserRepository userRepo,
                            OAuth2AuthorizationService authorizationService,
-                           @Qualifier("oauth2RestTemplate") RestTemplate restTemplate) {
+                           @Qualifier("oauth2RestTemplate") RestTemplate restTemplate,
+                           OtpService otpService,
+                           EmailService emailService
+    ) {
         this.userRepo = userRepo;
         this.authorizationService = (CustomAuthorizationService) authorizationService;
         this.restTemplate = restTemplate;
+        this.otpService = otpService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -57,7 +64,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void requestOtp(OtpRequestDTO req) {
-
+        String email = req.getEmail();
+        if (!userRepo.existsByEmailAndDeletedAtIsNull(email)) {
+            throw new EntityNotFoundException("User not found.");
+        }
+        String otp = otpService.requestOtp(email);
+        emailService.sendOtp(email, otp);
     }
 
     @Override
