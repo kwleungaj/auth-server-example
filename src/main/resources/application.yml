@@ -5,6 +5,8 @@ spring:
     active: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/authserverexample
+    username: ${app.secret.datasource.username}
+    password: ${app.secret.datasource.password}
   jpa:
     hibernate:
       ddl-auto: none
@@ -23,8 +25,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${app.mail.username}
-    password: ${app.mail.password}
+    username: ${app.secret.mail.username}
+    password: ${app.secret.mail.password}
     properties:
       mail:
         smtp:
@@ -43,14 +45,11 @@ app:
     base-url: http://localhost:${server.port}
     jwt:
       keystore: classpath:jwt.p12
+      keystore-password: ${app.secret.auth.jwt.keystore-password}
+      key-alias: ${app.secret.auth.jwt.key-alias}
+      key-password: ${app.secret.auth.jwt.key-password}
       access-token-validity-seconds: 3600
       refresh-token-validity-seconds: 86400
     otp:
       code-length: 6
       ttl-minutes: 5
-
-  # Redis for OTP storage
-  spring:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
