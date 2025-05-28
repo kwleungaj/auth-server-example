@@ -9,6 +9,7 @@ import com.wingsofpear.authserverexample.auth.OtpAuthenticationProvider;
 import com.wingsofpear.authserverexample.auth.dto.CustomUserDetails;
 import com.wingsofpear.authserverexample.auth.service.CustomAuthorizationService;
 import com.wingsofpear.authserverexample.auth.service.OtpService;
+import com.wingsofpear.authserverexample.common.constant.AuthConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -184,7 +185,7 @@ public class AuthorizationServerConfig {
                 Authentication authPrincipal = context.getPrincipal(); // UsernamePasswordAuthenticationToken
                 Object principal = authPrincipal.getPrincipal(); // CustomUserDetails
                 if (principal instanceof CustomUserDetails user) {
-                    context.getClaims().claim("user_id", user.getId());
+                    context.getClaims().claim(AuthConstant.USER_ID, user.getId());
                 }
             }
         };
