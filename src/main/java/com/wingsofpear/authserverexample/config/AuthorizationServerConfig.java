@@ -20,6 +20,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2Token;
@@ -29,7 +31,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -91,27 +93,39 @@ public class AuthorizationServerConfig {
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository(
+            JdbcOperations jdbcOperations,
+            PasswordEncoder pwEncoder,
             @Value("${app.auth.jwt.access-token-validity-seconds}") long accessTokenDurationS,
             @Value("${app.auth.jwt.refresh-token-validity-seconds}") long refreshTokenDurationS
     ) {
-        RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("mobile-client")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .authorizationGrantType(new AuthorizationGrantType("otp"))
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .scope("read").scope("write")
+        JdbcRegisteredClientRepository repo = new JdbcRegisteredClientRepository(jdbcOperations);
+        // If you need to seed a first client on startup
+        if (repo.findByClientId("mobile-client") == null) {
+            RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId("mobile-client")
+                    .clientSecret(pwEncoder.encode("secret"))
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                    .authorizationGrantType(new AuthorizationGrantType("otp"))
+                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                    .scope("read").scope("write")
 //                .clientSettings(ClientSettings.builder()
 //                        .requireAuthorizationConsent(true) // show an explicit “consent” (aka approval) screen to the end-user when they first authorize your application
 //                        .requireProofKey(true) // PKCE
 //                        .build())
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.ofSeconds(accessTokenDurationS))
-                        .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenDurationS))
-                        .reuseRefreshTokens(false) // rotate refresh tokens automatically
-                        .build())
-                .build();
-        return new InMemoryRegisteredClientRepository(client);
+                    .tokenSettings(TokenSettings.builder()
+                            .accessTokenTimeToLive(Duration.ofSeconds(accessTokenDurationS))
+                            .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenDurationS))
+                            .reuseRefreshTokens(false) // rotate refresh tokens automatically
+                            .build())
+                    .build();
+            repo.save(client);
+        }
+        return repo;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
