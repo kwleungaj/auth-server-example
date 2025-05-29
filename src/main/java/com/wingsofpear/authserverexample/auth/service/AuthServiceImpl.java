@@ -1,6 +1,6 @@
 package com.wingsofpear.authserverexample.auth.service;
 
-import com.wingsofpear.authserverexample.auth.OtpAuthenticationToken;
+import com.wingsofpear.authserverexample.auth.OAuth.OtpAuthenticationToken;
 import com.wingsofpear.authserverexample.auth.dto.*;
 import com.wingsofpear.authserverexample.auth.entity.User;
 import com.wingsofpear.authserverexample.auth.repository.UserRepository;

@@ -1,4 +1,4 @@
-package com.wingsofpear.authserverexample.auth;
+package com.wingsofpear.authserverexample.auth.OAuth;
 
 import com.wingsofpear.authserverexample.auth.service.OtpService;
 import org.springframework.security.authentication.AuthenticationProvider;

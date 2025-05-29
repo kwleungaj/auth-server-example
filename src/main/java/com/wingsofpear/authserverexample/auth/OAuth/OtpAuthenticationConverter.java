@@ -1,4 +1,4 @@
-package com.wingsofpear.authserverexample.auth;
+package com.wingsofpear.authserverexample.auth.OAuth;
 
 
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.wingsofpear.authserverexample.auth;
+package com.wingsofpear.authserverexample.auth.OAuth;
 
 import lombok.Getter;
 import org.springframework.lang.Nullable;
