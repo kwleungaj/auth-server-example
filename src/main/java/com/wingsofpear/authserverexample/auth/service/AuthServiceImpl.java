@@ -1,9 +1,9 @@
 package com.wingsofpear.authserverexample.auth.service;
 
-import com.wingsofpear.authserverexample.auth.OAuth.OtpAuthenticationToken;
 import com.wingsofpear.authserverexample.auth.dto.*;
 import com.wingsofpear.authserverexample.auth.entity.User;
 import com.wingsofpear.authserverexample.auth.repository.UserRepository;
+import com.wingsofpear.authserverexample.common.constant.AuthConstant;
 import com.wingsofpear.authserverexample.common.util.SessionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -78,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Login attempt for user: {}", req.getEmail());
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add(OAuth2ParameterNames.GRANT_TYPE, OtpAuthenticationToken.grantType.getValue());
+        form.add(OAuth2ParameterNames.GRANT_TYPE, AuthConstant.OTP);
         form.add("email", req.getEmail());
         form.add("otp", req.getOtp());
         form.add(OAuth2ParameterNames.CLIENT_ID, "mobile-client");

@@ -1,5 +1,6 @@
 package com.wingsofpear.authserverexample.auth.OAuth;
 
+import com.wingsofpear.authserverexample.common.constant.AuthConstant;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Getter
 public class OtpAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
-    public static final AuthorizationGrantType grantType = new AuthorizationGrantType("otp");
+    public static final AuthorizationGrantType grantType = new AuthorizationGrantType(AuthConstant.OTP);
     private final String email;
     private final String otp;
     private final Set<String> scopes;
