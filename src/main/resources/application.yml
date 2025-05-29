@@ -38,7 +38,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090 # http://localhost:8081/sso-auth-server/.well-known/jwks.json
+          issuer-uri: http://localhost:8090
 
 app:
   auth:
