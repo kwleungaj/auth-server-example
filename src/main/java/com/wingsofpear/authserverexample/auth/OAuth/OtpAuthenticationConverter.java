@@ -36,10 +36,6 @@ public class OtpAuthenticationConverter implements AuthenticationConverter {
                     new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST, "Missing email or otp", null)
             );
         }
-//        Map<String,Object> params = new HashMap<>();
-//        params.put("email", request.getParameter("email"));
-//        params.put("otp", request.getParameter("otp"));
-//        params.put(OAuth2ParameterNames.SCOPE, request.getParameter(OAuth2ParameterNames.SCOPE));
 
         // scopes
         String scope = parameters.getFirst("scope");
