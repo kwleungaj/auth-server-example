@@ -79,8 +79,8 @@ public class AuthServiceImpl implements AuthService {
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(OAuth2ParameterNames.GRANT_TYPE, AuthConstant.OTP);
-        form.add("email", req.getEmail());
-        form.add("otp", req.getOtp());
+        form.add(AuthConstant.EMAIL, req.getEmail());
+        form.add(AuthConstant.OTP, req.getOtp());
         form.add(OAuth2ParameterNames.CLIENT_ID, "mobile-client");
         form.add(OAuth2ParameterNames.CLIENT_SECRET, "secret");
         form.add(OAuth2ParameterNames.SCOPE, "read write");
