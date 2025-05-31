@@ -103,7 +103,7 @@ public class AuthorizationServerConfig {
         if (repo.findByClientId("mobile-client") == null) {
             RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
                     .clientId("mobile-client")
-                    .clientSecret(pwEncoder.encode("secret"))
+                    .clientSecret(pwEncoder.encode("secret")) // todo: store secret in secret
                     .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                     .authorizationGrantType(new AuthorizationGrantType("otp"))
                     .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
